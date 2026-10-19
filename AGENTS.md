@@ -258,6 +258,21 @@ Al finalizar, resumir:
 
 No presentar propuestas como funcionalidades implementadas.
 
+## 12. Estructura y comandos del proyecto (Nivel 1)
+
+Estructura real implementada (JavaScript + Phaser 3 + Vite):
+
+- `index.html`, `vite.config.js`, `package.json` con scripts `dev`, `build` y `preview`.
+- `src/main.js`: configuración del juego Phaser y registro de escenas.
+- `src/config.js`: parámetros del nivel (semilla, tamaño del laberinto, jugador, enemigos, cantidades). Las cantidades que el GDD no define se centralizan acá como supuestos configurables.
+- `src/scenes/`: `BootScene`, `GameScene`, `HUDScene`, `GameOverScene`, `LevelClearScene`.
+- `src/entities/`: `Player`, `Enemy` (base), `Elf`, `Zombie`, `Arrow`, `KeyItem`, `Chest`, `Door`.
+- `src/systems/`: `MazeGenerator` (backtracker con semilla), `LevelLayout` (colocación de llaves, cofres, puerta y grupos de enemigos), `RewardFactory`, `Random` (mulberry32).
+- `assets/`: se importan desde `BootScene`. Los recursos faltantes (pared, piso, llave, puerta, corazones) son mockups generados por código y deben reemplazarse cuando existan los definitivos.
+- `.gitignore`: excluye `node_modules/`, `dist/` y archivos temporales/logs.
+
+Comandos verificados en este proyecto: `npm install`, `npm run build` (vite build) y `npm run dev` (servidor en `http://localhost:5173`). No hay linter ni framework de tests configurado.
+
 ## Flujo esperado para futuras implementaciones
 
 revisar documentación → analizar impacto → aclarar dudas →
