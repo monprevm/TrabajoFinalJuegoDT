@@ -5,7 +5,7 @@ export const DOOR_STATES = {
   OPEN: 'open',
 };
 
-export class Door extends Phaser.Physics.Acade.Sprite {
+export class Door extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'door');
     scene.add.existing(scene.physics.add.existing(this));
