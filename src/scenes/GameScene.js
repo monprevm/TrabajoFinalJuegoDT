@@ -21,10 +21,13 @@ export class GameScene extends Phaser.Scene {
     this.levelClearTriggered = false;
     this.lastDoorMessageAt = 0;
 
-    const random = new SeededRandom(CONFIG.SEED);
+    this.levelNumber = this.registry.get('level') ?? 1;
+    this.levelConfig = CONFIG.LEVELS[this.levelNumber - 1];
+
+    const random = new SeededRandom(CONFIG.SEED + this.levelNumber);
     const maze = new MazeGenerator({
-      cols: CONFIG.MAZE_COLS,
-      rows: CONFIG.MAZE_ROWS,
+      cols: this.levelConfig.mazeCols,
+      rows: this.levelConfig.mazeRows,
       random,
     });
     maze.generate();
@@ -87,12 +90,13 @@ export class GameScene extends Phaser.Scene {
   #createPlayer() {
     const spawn = this.#tileToWorld({ x: 1, y: 1 });
     this.player = new Player(this, spawn.x, spawn.y);
+    this.player.score = this.registry.get('score') ?? 0;
     this.#fitSprite(this.player, CONFIG.TILE_SIZE * 0.8);
   }
 
   #createLayout() {
-    const layout = new LevelLayout(this.maze, this.random, CONFIG.LEVEL1).place();
-    this.requiredKeys = CONFIG.LEVEL1.keyCount;
+    const layout = new LevelLayout(this.maze, this.random, this.levelConfig).place();
+    this.requiredKeys = this.levelConfig.keyCount;
 
     this.keysGroup = this.physics.add.group();
     for (const tile of layout.keyTiles) {
@@ -258,9 +262,18 @@ export class GameScene extends Phaser.Scene {
     this.levelClearTriggered = true;
     this.player.setVelocity(0, 0);
     this.player.alive = false;
+    this.registry.set('score', this.player.score);
+    const isFinal = this.levelNumber >= CONFIG.TOTAL_LEVELS;
+    if (!isFinal) {
+      this.registry.set('level', this.levelNumber + 1);
+    }
     this.time.delayedCall(400, () => {
       this.scene.stop('HUDScene');
-      this.scene.start('LevelClearScene', { score: this.player.score });
+      this.scene.start('LevelClearScene', {
+        score: this.player.score,
+        level: this.levelNumber,
+        isFinal,
+      });
     });
   }
 

@@ -25,6 +25,8 @@ export class GameOverScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const restart = () => {
+      this.registry.set('level', 1);
+      this.registry.set('score', 0);
       this.scene.start('GameScene');
     };
     this.input.keyboard.once('keydown-ENTER', restart);
