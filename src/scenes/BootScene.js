@@ -25,7 +25,7 @@ export class BootScene extends Phaser.Scene {
     this.#generateMockups();
     this.registry.setDefault('level', 1);
     this.registry.setDefault('score', 0);
-    this.scene.start('GameScene');
+    this.scene.start('MainMenuScene');
   }
 
   #generateMockups() {

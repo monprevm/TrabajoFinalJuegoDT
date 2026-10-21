@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CONFIG } from './config.js';
 import { BootScene } from './scenes/BootScene.js';
+import { MainMenuScene } from './scenes/MainMenuScene.js';
 import { GameScene } from './scenes/GameScene.js';
 import { HUDScene } from './scenes/HUDScene.js';
 import { GameOverScene } from './scenes/GameOverScene.js';
@@ -22,5 +23,5 @@ new Phaser.Game({
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene, GameScene, HUDScene, GameOverScene, LevelClearScene],
+  scene: [BootScene, MainMenuScene, GameScene, HUDScene, GameOverScene, LevelClearScene],
 });

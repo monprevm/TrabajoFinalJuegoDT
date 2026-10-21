@@ -253,7 +253,10 @@ export class GameScene extends Phaser.Scene {
     this.gameOverTriggered = true;
     this.time.delayedCall(700, () => {
       this.scene.stop('HUDScene');
-      this.scene.start('GameOverScene');
+      this.scene.start('GameOverScene', {
+        score: this.player.score,
+        level: this.levelNumber,
+      });
     });
   }
 

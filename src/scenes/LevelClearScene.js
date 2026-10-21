@@ -13,7 +13,7 @@ export class LevelClearScene extends Phaser.Scene {
     const title = isFinal ? '¡JUEGO COMPLETADO!' : `¡NIVEL ${level} SUPERADO!`;
     const titleColor = isFinal ? '#ffd83d' : '#66ff99';
     const prompt = isFinal
-      ? 'Presioná ENTER o click para jugar de nuevo'
+      ? 'Presioná ENTER o click para volver al menú principal'
       : `Presioná ENTER o click para jugar el nivel ${level + 1}`;
 
     this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000, 0.72).setOrigin(0);
@@ -45,6 +45,8 @@ export class LevelClearScene extends Phaser.Scene {
       if (isFinal) {
         this.registry.set('level', 1);
         this.registry.set('score', 0);
+        this.scene.start('MainMenuScene');
+        return;
       }
       this.scene.start('GameScene');
     };
