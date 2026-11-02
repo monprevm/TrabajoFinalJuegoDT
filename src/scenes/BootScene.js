@@ -7,6 +7,7 @@ import ogreUrl from '../../assets/ENEMIGO3 OGRO.png';
 import arrowUrl from '../../assets/FLECHA.png';
 import chestUrl from '../../assets/COFRE.png';
 import appleUrl from '../../assets/MANZANA.png';
+import hadaUrl from '../../assets/HADA.png';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -21,6 +22,7 @@ export class BootScene extends Phaser.Scene {
     this.load.image('arrow', arrowUrl);
     this.load.image('chest', chestUrl);
     this.load.image('apple', appleUrl);
+    this.load.image('hada', hadaUrl);
   }
 
   create() {
@@ -84,6 +86,11 @@ export class BootScene extends Phaser.Scene {
     g.fillStyle(0xffffff);
     g.fillRect(0, 0, 6, 6);
     g.generateTexture('pixel', 6, 6);
+    g.clear();
+
+    g.fillStyle(0xffd83d);
+    g.fillTriangle(0, 0, 0, 18, 24, 9);
+    g.generateTexture('hint-arrow', 24, 18);
     g.destroy();
   }
 }

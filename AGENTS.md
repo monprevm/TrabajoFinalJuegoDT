@@ -264,10 +264,10 @@ Estructura real implementada (JavaScript + Phaser 3 + Vite):
 
 - `index.html`, `vite.config.js`, `package.json` con scripts `dev`, `build` y `preview`.
 - `src/main.js`: configuración del juego Phaser y registro de escenas.
-- `src/config.js`: parámetros del nivel (semilla, tamaño del laberinto, jugador, enemigos, cantidades). Las cantidades que el GDD no define se centralizan acá como supuestos configurables. `TOTAL_LEVELS = 5`; los niveles 3 a 5 están configurados y el Ogro aparece desde el nivel 3.
+- `src/config.js`: parámetros del nivel (semilla, tamaño del laberinto, jugador, enemigos, cantidades). Las cantidades que el GDD no define se centralizan acá como supuestos configurables. `TOTAL_LEVELS = 5`; los niveles 3 a 5 están configurados y el Ogro aparece desde el nivel 3. La vida máxima inicial es 3 y el tope es 5; las recompensas Hada y Marco de corazón se habilitan desde el nivel 4.
 - `src/scenes/`: `BootScene`, `GameScene`, `HUDScene`, `GameOverScene`, `LevelClearScene`.
 - `src/entities/`: `Player`, `Enemy` (base), `Elf`, `Zombie`, `Ogre`, `Arrow`, `KeyItem`, `Chest`, `Door`.
-- `src/systems/`: `MazeGenerator` (backtracker con semilla), `LevelLayout` (colocación de llaves, cofres, puerta y grupos de enemigos), `RewardFactory`, `Random` (mulberry32).
+- `src/systems/`: `MazeGenerator` (backtracker con semilla), `LevelLayout` (colocación de llaves, cofres, puerta y grupos de enemigos), `RewardFactory` (tesoro, manzana, munición, Hada y Marco de corazón), `Random` (mulberry32).
 - `assets/`: se importan desde `BootScene`. Los recursos faltantes (pared, piso, llave, puerta, corazones) son mockups generados por código y deben reemplazarse cuando existan los definitivos.
 - `.gitignore`: excluye `node_modules/`, `dist/` y archivos temporales/logs.
 
