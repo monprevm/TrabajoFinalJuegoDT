@@ -32,6 +32,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.invulnerableUntil = 0;
     this.lastDirection = DIRECTIONS.right;
     this.alive = true;
+    this.isWallJumping = false;
 
     this.arrows = scene.physics.add.group({
       classType: Arrow,
@@ -40,7 +41,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   handleInput(cursors, keys, time) {
-    if (!this.alive) return;
+    if (!this.alive || this.isWallJumping) {
+      if (this.isWallJumping) this.setVelocity(0, 0);
+      return;
+    }
 
     let vx = 0;
     let vy = 0;
@@ -72,7 +76,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   tryShoot(time, pointer) {
-    if (!this.alive) return false;
+    if (!this.alive || this.isWallJumping) return false;
     if (!pointer.rightButtonDown()) return false;
     if (this.ammo <= 0) return false;
     if (time - this.lastShotAt < this.shotCooldownMs) return false;
@@ -84,6 +88,31 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (!arrow) return false;
     arrow.fire(this.x, this.y, direction);
     this.emitStatsChanged();
+    return true;
+  }
+
+  wallJumpTo(targetX, targetY, durationMs) {
+    if (!this.alive || this.isWallJumping) return false;
+    this.isWallJumping = true;
+    this.setVelocity(0, 0);
+    if (this.body) this.body.enable = false;
+
+    this.scene.tweens.add({
+      targets: this,
+      x: targetX,
+      y: targetY,
+      duration: durationMs,
+      ease: 'Sine.easeInOut',
+      onComplete: () => {
+        if (!this.active) return;
+        if (this.body) {
+          this.body.enable = true;
+          this.body.reset(targetX, targetY);
+        }
+        this.isWallJumping = false;
+        this.emit('wall-jump-finished');
+      },
+    });
     return true;
   }
 

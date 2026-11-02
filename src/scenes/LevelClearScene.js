@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CONFIG } from '../config.js';
 
 export class LevelClearScene extends Phaser.Scene {
   constructor() {
@@ -15,10 +16,13 @@ export class LevelClearScene extends Phaser.Scene {
     const prompt = isFinal
       ? 'Presioná ENTER o click para volver al menú principal'
       : `Presioná ENTER o click para jugar el nivel ${level + 1}`;
+    const titleY = this.scale.height / 2 + (isFinal ? -75 : -50);
+    const scoreY = this.scale.height / 2 + (isFinal ? -5 : 10);
+    const promptY = this.scale.height / 2 + (isFinal ? 95 : 55);
 
     this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000, 0.72).setOrigin(0);
     this.add
-      .text(this.scale.width / 2, this.scale.height / 2 - 50, title, {
+      .text(this.scale.width / 2, titleY, title, {
         fontFamily: 'monospace',
         fontSize: '42px',
         color: titleColor,
@@ -27,14 +31,28 @@ export class LevelClearScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.add
-      .text(this.scale.width / 2, this.scale.height / 2 + 10, `Puntos obtenidos: ${score}`, {
+      .text(this.scale.width / 2, scoreY, isFinal ? `Puntaje final: ${score}` : `Puntos obtenidos: ${score}`, {
         fontFamily: 'monospace',
         fontSize: '22px',
         color: '#ffd83d',
       })
       .setOrigin(0.5);
+    if (isFinal) {
+      this.add
+        .text(
+          this.scale.width / 2,
+          this.scale.height / 2 + 40,
+          `Niveles completados: ${CONFIG.TOTAL_LEVELS}/${CONFIG.TOTAL_LEVELS}`,
+          {
+            fontFamily: 'monospace',
+            fontSize: '18px',
+            color: '#66ff99',
+          },
+        )
+        .setOrigin(0.5);
+    }
     this.add
-      .text(this.scale.width / 2, this.scale.height / 2 + 55, prompt, {
+      .text(this.scale.width / 2, promptY, prompt, {
         fontFamily: 'monospace',
         fontSize: '18px',
         color: '#ffffff',
