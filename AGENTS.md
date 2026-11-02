@@ -14,7 +14,7 @@ Instrucciones operativas para el trabajo del agente de IA en este repositorio.
 - El archivo `docs/~$ DT2 GDD.docx` es temporal de Word y debe ignorarse; la fuente vigente es `docs/TF DT2 GDD.docx`.
 - Stack declarado: Phaser/Web (JavaScript/TypeScript). Si la estructura real del proyecto difiere cuando se agregue código, registrarla en este archivo sin asumirla.
 - Recursos gráficos: carpeta `assets/` en la raíz del proyecto, según convención informada por el usuario.
-- Recursos gráficos detectados en `assets/` al momento del diagnóstico: `JUGADOR.png`, `ENEMIGO1 ELFO.png`, `ENEMIGO2 ZOMBIE.png`, `FLECHA.png`, `COFRE.png`, `HADA.png`. Esta lista puede cambiar; verificar su disponibilidad antes de referenciarla.
+- Recursos gráficos detectados en `assets/` al momento del diagnóstico: `JUGADOR.png`, `ENEMIGO1 ELFO.png`, `ENEMIGO2 ZOMBIE.png`, `ENEMIGO3 OGRO.png`, `FLECHA.png`, `COFRE.png`, `HADA.png`, `MANZANA.png`. Esta lista puede cambiar; verificar su disponibilidad antes de referenciarla.
 - Repositorio Git: rama base `master`, remoto `origin` (`https://github.com/monprevm/TrabajoFinalJuegoDT.git`).
 - En el diagnóstico inicial no se ha detectado código fuente ni scripts de prueba. Existe la carpeta `assets/` con sprites. Las rutas y comandos reales deben verificarse cuando existan; no inventarlos.
 - Clasificar el requisito solicitado como: definido, parcialmente definido, no definido, en contradicción o no aplica.
@@ -150,7 +150,7 @@ Además:
 - Consultar detalles como spritesheet, fotogramas o animaciones cuando sean necesarios y no estén documentados.
 - Si falta el archivo, solicitarlo antes de avanzar con la parte que depende de él.
 - Continuar con la lógica independiente de los recursos gráficos mientras se resuelve la consulta.
-- Recursos gráficos detectados al momento del diagnóstico en `assets/`: `JUGADOR.png`, `ENEMIGO1 ELFO.png`, `ENEMIGO2 ZOMBIE.png`, `FLECHA.png`, `COFRE.png`, `HADA.png`; su uso debe confirmarse antes de implementar.
+- Recursos gráficos detectados al momento del diagnóstico en `assets/`: `JUGADOR.png`, `ENEMIGO1 ELFO.png`, `ENEMIGO2 ZOMBIE.png`, `ENEMIGO3 OGRO.png`, `FLECHA.png`, `COFRE.png`, `HADA.png`, `MANZANA.png`; su uso debe confirmarse antes de implementar.
 - No tratar `docs/~$ DT2 GDD.docx` ni archivos temporales como recursos válidos del proyecto.
 
 ## 8. Definir y preparar el flujo Git
@@ -264,9 +264,9 @@ Estructura real implementada (JavaScript + Phaser 3 + Vite):
 
 - `index.html`, `vite.config.js`, `package.json` con scripts `dev`, `build` y `preview`.
 - `src/main.js`: configuración del juego Phaser y registro de escenas.
-- `src/config.js`: parámetros del nivel (semilla, tamaño del laberinto, jugador, enemigos, cantidades). Las cantidades que el GDD no define se centralizan acá como supuestos configurables.
+- `src/config.js`: parámetros del nivel (semilla, tamaño del laberinto, jugador, enemigos, cantidades). Las cantidades que el GDD no define se centralizan acá como supuestos configurables. `TOTAL_LEVELS = 5`; los niveles 3 a 5 están configurados y el Ogro aparece desde el nivel 3.
 - `src/scenes/`: `BootScene`, `GameScene`, `HUDScene`, `GameOverScene`, `LevelClearScene`.
-- `src/entities/`: `Player`, `Enemy` (base), `Elf`, `Zombie`, `Arrow`, `KeyItem`, `Chest`, `Door`.
+- `src/entities/`: `Player`, `Enemy` (base), `Elf`, `Zombie`, `Ogre`, `Arrow`, `KeyItem`, `Chest`, `Door`.
 - `src/systems/`: `MazeGenerator` (backtracker con semilla), `LevelLayout` (colocación de llaves, cofres, puerta y grupos de enemigos), `RewardFactory`, `Random` (mulberry32).
 - `assets/`: se importan desde `BootScene`. Los recursos faltantes (pared, piso, llave, puerta, corazones) son mockups generados por código y deben reemplazarse cuando existan los definitivos.
 - `.gitignore`: excluye `node_modules/`, `dist/` y archivos temporales/logs.
