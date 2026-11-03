@@ -45,12 +45,58 @@ export class HUDScene extends Phaser.Scene {
       .setOrigin(0.5, 1)
       .setScrollFactor(0);
 
+    const centerX = this.scale.width / 2;
+    this.hintIcon = this.add
+      .image(centerX - 32, 92, 'hada')
+      .setDisplaySize(22, 22)
+      .setScrollFactor(0)
+      .setDepth(24)
+      .setVisible(false);
+    this.hintArrow = this.add
+      .image(centerX + 2, 92, 'hint-arrow')
+      .setScrollFactor(0)
+      .setDepth(24)
+      .setVisible(false);
+    this.hintText = this.add
+      .text(centerX, 116, '', {
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        color: '#c9b8ff',
+        stroke: '#000000',
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(24)
+      .setVisible(false);
+    this.hintTimer = null;
+
     this.game.events.on('hud-update', this.render, this);
+    this.game.events.on('hud-hint', this.showHint, this);
     const initialStats = this.registry.get('stats');
     if (initialStats) this.render(initialStats);
     this.events.once('shutdown', () => {
       this.game.events.off('hud-update', this.render, this);
+      this.game.events.off('hud-hint', this.showHint, this);
+      if (this.hintTimer) this.hintTimer.remove(false);
     });
+  }
+
+  showHint({ angle, label, durationMs = 5000 }) {
+    if (this.hintTimer) this.hintTimer.remove(false);
+    if (this.hintIcon) this.hintIcon.setVisible(true);
+    if (this.hintArrow) this.hintArrow.setVisible(true).setRotation(angle);
+    if (this.hintText) {
+      this.hintText.setText(label).setVisible(true);
+    }
+    this.hintTimer = this.time.delayedCall(durationMs, () => this.hideHint());
+  }
+
+  hideHint() {
+    if (this.hintIcon) this.hintIcon.setVisible(false);
+    if (this.hintArrow) this.hintArrow.setVisible(false);
+    if (this.hintText) this.hintText.setVisible(false);
+    this.hintTimer = null;
   }
 
   render(stats) {

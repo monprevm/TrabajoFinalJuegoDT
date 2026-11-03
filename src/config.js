@@ -6,7 +6,7 @@ export const CONFIG = {
   TOTAL_LEVELS: 5,
   PLAYER: {
     speed: 170,
-    maxHealth: 5,
+    maxHealthCap: 5,
     startHealth: 3,
     maxAmmo: 20,
     startAmmo: 20,
@@ -98,11 +98,11 @@ export const CONFIG = {
       mazeCols: 21,
       mazeRows: 21,
       keyCount: 3,
-      chestCount: 9,
-      elfGroups: 6,
+      chestCount: 10,
+      elfGroups: 7,
       elfPerGroupMin: 2,
       elfPerGroupMax: 3,
-      zombieGroups: 4,
+      zombieGroups: 5,
       zombiePerGroupMin: 1,
       zombiePerGroupMax: 3,
       ogreCount: 1,
@@ -136,5 +136,10 @@ export const CONFIG = {
   AMMO_PICKUP: {
     min: 1,
     max: 5,
+  },
+  REWARDS: {
+    advancedFromLevel: 4,
+    baseWeights: { treasure: 50, apple: 30, ammo: 20 },
+    advancedWeights: { treasure: 40, apple: 25, ammo: 20, hada: 10, marco: 5 },
   },
 };

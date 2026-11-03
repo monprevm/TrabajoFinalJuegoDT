@@ -3,7 +3,7 @@ import { CONFIG } from '../config.js';
 import { MazeGenerator, WALL } from '../systems/MazeGenerator.js';
 import { SeededRandom } from '../systems/Random.js';
 import { LevelLayout } from '../systems/LevelLayout.js';
-import { RewardFactory } from '../systems/RewardFactory.js';
+import { RewardFactory, REWARD_TYPES } from '../systems/RewardFactory.js';
 import { Player } from '../entities/Player.js';
 import { Arrow } from '../entities/Arrow.js';
 import { Elf } from '../entities/Elf.js';
@@ -36,7 +36,7 @@ export class GameScene extends Phaser.Scene {
     maze.tileSize = CONFIG.TILE_SIZE;
     this.maze = maze;
     this.random = random;
-    this.rewardFactory = new RewardFactory(random);
+    this.rewardFactory = new RewardFactory(random, this.levelNumber);
 
     this.#createWorld();
     this.#createPlayer();
@@ -232,24 +232,80 @@ export class GameScene extends Phaser.Scene {
   }
 
   #applyReward(reward) {
-    if (reward.type === 'treasure') {
+    if (reward.type === REWARD_TYPES.TREASURE) {
       this.player.addScore(reward.points);
       this.#showFloatingText(this.player.x, this.player.y - 20, reward.label, '#ffd83d');
       return;
     }
-    if (reward.type === 'ammo') {
+    if (reward.type === REWARD_TYPES.AMMO) {
       const added = this.player.addAmmo(reward.amount);
       const label = added > 0 ? `+${added} flechas` : 'Munición llena';
       this.#showFloatingText(this.player.x, this.player.y - 20, label, '#8ecbff');
       return;
     }
-    const stored = this.player.addApple();
-    this.#showFloatingText(
-      this.player.x,
-      this.player.y - 20,
-      stored ? reward.label : 'Bolsa de comida llena',
-      stored ? '#8bd450' : '#aaaaaa',
-    );
+    if (reward.type === REWARD_TYPES.HADA) {
+      const label = this.#revealHada();
+      this.#showFloatingText(
+        this.player.x,
+        this.player.y - 20,
+        label ?? 'No quedan objetivos',
+        label ? '#c9b8ff' : '#aaaaaa',
+      );
+      return;
+    }
+    if (reward.type === REWARD_TYPES.HEART_FRAME) {
+      const gained = this.player.addMaxHeart();
+      this.#showFloatingText(
+        this.player.x,
+        this.player.y - 20,
+        gained ? 'Vida máxima +1' : 'Vida máxima al límite',
+        gained ? '#ff6b9a' : '#aaaaaa',
+      );
+      return;
+    }
+    if (reward.type === REWARD_TYPES.APPLE) {
+      const stored = this.player.addApple();
+      this.#showFloatingText(
+        this.player.x,
+        this.player.y - 20,
+        stored ? reward.label : 'Bolsa de comida llena',
+        stored ? '#8bd450' : '#aaaaaa',
+      );
+    }
+  }
+
+  #revealHada() {
+    const target = this.#pickHadaTarget();
+    if (!target) return null;
+    const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, target.x, target.y);
+    const label =
+      this.player.keys >= this.requiredKeys ? 'Hada: la puerta' : 'Hada: llave restante';
+    this.game.events.emit('hud-hint', { angle, label, durationMs: 5000 });
+    return label;
+  }
+
+  #pickHadaTarget() {
+    const targets =
+      this.player.keys >= this.requiredKeys
+        ? [this.door]
+        : this.keysGroup.getChildren().filter((key) => key.active);
+    if (targets.length === 0) return null;
+
+    let nearest = targets[0];
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (const target of targets) {
+      const distance = Phaser.Math.Distance.Between(
+        this.player.x,
+        this.player.y,
+        target.x,
+        target.y,
+      );
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        nearest = target;
+      }
+    }
+    return nearest;
   }
 
   #onDoorTouched() {

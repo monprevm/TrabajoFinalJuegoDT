@@ -17,7 +17,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     const cfg = CONFIG.PLAYER;
     this.speed = cfg.speed;
-    this.maxHealth = cfg.maxHealth;
+    this.maxHealthCap = cfg.maxHealthCap;
+    this.maxHealth = cfg.startHealth;
     this.health = cfg.startHealth;
     this.maxAmmo = cfg.maxAmmo;
     this.ammo = cfg.startAmmo;
@@ -101,6 +102,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return true;
   }
 
+  addMaxHeart() {
+    if (this.maxHealth >= this.maxHealthCap) return false;
+    this.maxHealth += 1;
+    this.health = Math.min(this.maxHealth, this.health + 1);
+    this.emitStatsChanged();
+    return true;
+  }
+
   addAmmo(amount) {
     const added = Math.min(amount, this.maxAmmo - this.ammo);
     this.ammo += added;
@@ -152,6 +161,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return {
       health: this.health,
       maxHealth: this.maxHealth,
+      maxHealthCap: this.maxHealthCap,
       ammo: this.ammo,
       maxAmmo: this.maxAmmo,
       apples: this.apples,
