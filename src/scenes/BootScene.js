@@ -91,6 +91,17 @@ export class BootScene extends Phaser.Scene {
     g.fillStyle(0xffd83d);
     g.fillTriangle(0, 0, 0, 18, 24, 9);
     g.generateTexture('hint-arrow', 24, 18);
+    g.clear();
+
+    g.fillStyle(0x8b4a2b);
+    g.fillRect(8, 13, 8, 9);
+    g.fillStyle(0xd94b4b);
+    g.fillEllipse(12, 10, 22, 14);
+    g.fillStyle(0xffffff);
+    g.fillCircle(7, 8, 2);
+    g.fillCircle(15, 7, 2);
+    g.fillCircle(11, 12, 2);
+    g.generateTexture('mushroom', 24, 24);
     g.destroy();
   }
 }

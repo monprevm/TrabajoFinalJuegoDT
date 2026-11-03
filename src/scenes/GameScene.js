@@ -9,6 +9,7 @@ import { Arrow } from '../entities/Arrow.js';
 import { Elf } from '../entities/Elf.js';
 import { Zombie } from '../entities/Zombie.js';
 import { Ogre } from '../entities/Ogre.js';
+import { Mushroom } from '../entities/Mushroom.js';
 import { KeyItem } from '../entities/KeyItem.js';
 import { Chest } from '../entities/Chest.js';
 import { Door, DOOR_STATES } from '../entities/Door.js';
@@ -22,6 +23,7 @@ export class GameScene extends Phaser.Scene {
     this.gameOverTriggered = false;
     this.levelClearTriggered = false;
     this.lastDoorMessageAt = 0;
+    this.mushroomJumpLocked = false;
 
     this.levelNumber = this.registry.get('level') ?? 1;
     this.levelConfig = CONFIG.LEVELS[this.levelNumber - 1];
@@ -119,6 +121,18 @@ export class GameScene extends Phaser.Scene {
     this.door = new Door(this, doorPos.x, doorPos.y);
     this.#fitSprite(this.door, CONFIG.TILE_SIZE * 0.9);
 
+    this.mushrooms = this.physics.add.staticGroup();
+    for (const pair of layout.mushroomPairs) {
+      const aPos = this.#tileToWorld(pair.a);
+      const bPos = this.#tileToWorld(pair.b);
+      const mushroomA = new Mushroom(this, aPos.x, aPos.y);
+      const mushroomB = new Mushroom(this, bPos.x, bPos.y);
+      mushroomA.setPair(mushroomB);
+      mushroomB.setPair(mushroomA);
+      this.mushrooms.add(mushroomA);
+      this.mushrooms.add(mushroomB);
+    }
+
     this.enemies = this.physics.add.group();
     this.enemyArrows = this.physics.add.group({
       classType: Arrow,
@@ -140,12 +154,22 @@ export class GameScene extends Phaser.Scene {
         this.enemies.add(zombie);
       }
     }
+    let bossIndex = 0;
     for (const tile of layout.ogreTiles) {
+      bossIndex += 1;
+      const bossId = `ogre-${bossIndex}`;
+      const bossLabel = `Ogro ${bossIndex}`;
       const pos = this.#tileToWorld(tile);
       const ogre = new Ogre(this, pos.x, pos.y);
       this.#fitSprite(ogre, CONFIG.TILE_SIZE * 0.95);
       ogre.on('shoot', (shot) => this.#spawnEnemyArrow(shot));
       ogre.on('stomp', (area) => this.#resolveStomp(area));
+      ogre.on('health-changed', (data) => {
+        this.game.events.emit('boss-health-changed', { id: bossId, label: bossLabel, ...data });
+      });
+      ogre.on('died', () => {
+        this.game.events.emit('boss-died', { id: bossId });
+      });
       this.enemies.add(ogre);
     }
   }
@@ -167,6 +191,35 @@ export class GameScene extends Phaser.Scene {
     const hit = this.player.takeDamage(CONFIG.OGRE.stompDamage, this.time.now);
     if (hit) {
       this.#showFloatingText(this.player.x, this.player.y - 20, '¡Pisotada!', '#ff6b6b');
+    }
+  }
+
+  #onMushroomTouched(mushroom) {
+    if (this.mushroomJumpLocked || this.player.isWallJumping) return;
+    if (!mushroom.active || !mushroom.pair || !mushroom.pair.active) return;
+
+    const target = mushroom.pair;
+    const started = this.player.wallJumpTo(
+      target.x,
+      target.y,
+      CONFIG.MUSHROOM.jumpDurationMs,
+    );
+    if (!started) return;
+
+    this.mushroomJumpLocked = true;
+    mushroom.setTint(0xffe066);
+    target.setTint(0xffe066);
+    this.time.delayedCall(CONFIG.MUSHROOM.jumpDurationMs, () => {
+      if (mushroom.active) mushroom.clearTint();
+      if (target.active) target.clearTint();
+    });
+    this.#showFloatingText(this.player.x, this.player.y - 20, '¡Salto!', '#ffd83d');
+  }
+
+  #updateMushroomLock() {
+    if (!this.mushroomJumpLocked || this.player.isWallJumping) return;
+    if (!this.physics.overlap(this.player, this.mushrooms)) {
+      this.mushroomJumpLocked = false;
     }
   }
 
@@ -219,6 +272,10 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.add.overlap(this.player, this.enemies, () => {
       this.player.takeDamage(CONFIG.CONTACT_DAMAGE, this.time.now);
+    });
+
+    this.physics.add.overlap(this.player, this.mushrooms, (_player, mushroom) => {
+      this.#onMushroomTouched(mushroom);
     });
 
     this.physics.add.overlap(this.player, this.door, () => this.#onDoorTouched());
@@ -381,6 +438,7 @@ export class GameScene extends Phaser.Scene {
     if (!this.player || !this.player.alive) return;
     this.player.handleInput(this.cursors, this.keys, time);
     this.player.tryShoot(time, this.input.activePointer);
+    this.#updateMushroomLock();
     this.enemies.getChildren().forEach((enemy) => {
       if (enemy.active) enemy.update(time, this.player, this.maze);
     });

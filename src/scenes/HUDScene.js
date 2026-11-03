@@ -70,16 +70,71 @@ export class HUDScene extends Phaser.Scene {
       .setDepth(24)
       .setVisible(false);
     this.hintTimer = null;
+    this.bossBars = new Map();
 
     this.game.events.on('hud-update', this.render, this);
     this.game.events.on('hud-hint', this.showHint, this);
+    this.game.events.on('boss-health-changed', this.updateBossBar, this);
+    this.game.events.on('boss-died', this.removeBossBar, this);
     const initialStats = this.registry.get('stats');
     if (initialStats) this.render(initialStats);
     this.events.once('shutdown', () => {
       this.game.events.off('hud-update', this.render, this);
       this.game.events.off('hud-hint', this.showHint, this);
+      this.game.events.off('boss-health-changed', this.updateBossBar, this);
+      this.game.events.off('boss-died', this.removeBossBar, this);
       if (this.hintTimer) this.hintTimer.remove(false);
+      this.bossBars.clear();
     });
+  }
+
+  updateBossBar({ id, label, health, maxHealth }) {
+    let bar = this.bossBars.get(id);
+    if (!bar) {
+      const width = 220;
+      const height = 12;
+      const background = this.add
+        .rectangle(0, 0, width, height, 0x000000, 0.75)
+        .setOrigin(0.5);
+      const fill = this.add
+        .rectangle(-width / 2 + 2, 0, width - 4, height - 4, 0xff4d4d)
+        .setOrigin(0, 0.5);
+      const name = this.add
+        .text(0, -13, label, {
+          fontFamily: 'monospace',
+          fontSize: '12px',
+          color: '#ffb3b3',
+          stroke: '#000000',
+          strokeThickness: 3,
+        })
+        .setOrigin(0.5);
+      const container = this.add
+        .container(this.scale.width / 2, 0, [background, fill, name])
+        .setScrollFactor(0)
+        .setDepth(30);
+      bar = { container, fill, width };
+      this.bossBars.set(id, bar);
+      this.#reflowBossBars();
+    }
+
+    const ratio = maxHealth > 0 ? Phaser.Math.Clamp(health / maxHealth, 0, 1) : 0;
+    bar.fill.scaleX = ratio;
+  }
+
+  removeBossBar({ id }) {
+    const bar = this.bossBars.get(id);
+    if (!bar) return;
+    bar.container.destroy();
+    this.bossBars.delete(id);
+    this.#reflowBossBars();
+  }
+
+  #reflowBossBars() {
+    let index = 0;
+    for (const bar of this.bossBars.values()) {
+      bar.container.setPosition(this.scale.width / 2, 28 + index * 34);
+      index += 1;
+    }
   }
 
   showHint({ angle, label, durationMs = 5000 }) {

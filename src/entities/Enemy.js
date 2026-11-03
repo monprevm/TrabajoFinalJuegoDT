@@ -7,6 +7,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
 
     this.enemyConfig = config;
+    this.maxHealth = config.health;
     this.health = config.health;
     this.speed = config.speed;
     this.sightDistance = config.sightDistance;
@@ -20,6 +21,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setTintFill(0xffffff);
     this.scene.time.delayedCall(90, () => {
       if (this.active) this.clearTint();
+    });
+    this.emit('health-changed', {
+      health: Math.max(0, this.health),
+      maxHealth: this.maxHealth,
     });
     if (this.health <= 0) {
       this.emit('died', this);
