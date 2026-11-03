@@ -5,8 +5,10 @@ import { SeededRandom } from '../systems/Random.js';
 import { LevelLayout } from '../systems/LevelLayout.js';
 import { RewardFactory } from '../systems/RewardFactory.js';
 import { Player } from '../entities/Player.js';
+import { Arrow } from '../entities/Arrow.js';
 import { Elf } from '../entities/Elf.js';
 import { Zombie } from '../entities/Zombie.js';
+import { Ogre } from '../entities/Ogre.js';
 import { KeyItem } from '../entities/KeyItem.js';
 import { Chest } from '../entities/Chest.js';
 import { Door, DOOR_STATES } from '../entities/Door.js';
@@ -118,6 +120,10 @@ export class GameScene extends Phaser.Scene {
     this.#fitSprite(this.door, CONFIG.TILE_SIZE * 0.9);
 
     this.enemies = this.physics.add.group();
+    this.enemyArrows = this.physics.add.group({
+      classType: Arrow,
+      runChildUpdate: true,
+    });
     for (const group of layout.elfGroups) {
       for (const tile of group) {
         const pos = this.#tileToWorld(tile);
@@ -133,6 +139,34 @@ export class GameScene extends Phaser.Scene {
         this.#fitSprite(zombie, CONFIG.TILE_SIZE * 0.85);
         this.enemies.add(zombie);
       }
+    }
+    for (const tile of layout.ogreTiles) {
+      const pos = this.#tileToWorld(tile);
+      const ogre = new Ogre(this, pos.x, pos.y);
+      this.#fitSprite(ogre, CONFIG.TILE_SIZE * 0.95);
+      ogre.on('shoot', (shot) => this.#spawnEnemyArrow(shot));
+      ogre.on('stomp', (area) => this.#resolveStomp(area));
+      this.enemies.add(ogre);
+    }
+  }
+
+  #spawnEnemyArrow(shot) {
+    const arrow = this.enemyArrows.get(shot.x, shot.y, 'arrow');
+    if (!arrow) return;
+    arrow.fire(shot.x, shot.y, shot.direction, {
+      speed: CONFIG.OGRE.shotSpeed,
+      damage: CONFIG.OGRE.arrowDamage,
+    });
+    arrow.setTint(0xff6b6b);
+  }
+
+  #resolveStomp(area) {
+    if (!this.player.alive) return;
+    const distance = Phaser.Math.Distance.Between(area.x, area.y, this.player.x, this.player.y);
+    if (distance > area.radius) return;
+    const hit = this.player.takeDamage(CONFIG.OGRE.stompDamage, this.time.now);
+    if (hit) {
+      this.#showFloatingText(this.player.x, this.player.y - 20, '¡Pisotada!', '#ff6b6b');
     }
   }
 
@@ -155,11 +189,18 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.walls);
     this.physics.add.collider(this.enemies, this.walls);
     this.physics.add.collider(this.player.arrows, this.walls, (arrow) => arrow.kill());
+    this.physics.add.collider(this.enemyArrows, this.walls, (arrow) => arrow.kill());
 
     this.physics.add.overlap(this.player.arrows, this.enemies, (arrow, enemy) => {
       if (arrow.dead || !enemy.active) return;
       arrow.kill();
       enemy.takeDamage(arrow.damage);
+    });
+
+    this.physics.add.overlap(this.enemyArrows, this.player, (arrow) => {
+      if (arrow.dead || !this.player.alive) return;
+      arrow.kill();
+      this.player.takeDamage(arrow.damage, this.time.now);
     });
 
     this.physics.add.overlap(this.player, this.keysGroup, (_player, key) => {

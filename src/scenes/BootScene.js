@@ -3,6 +3,7 @@ import { CONFIG } from '../config.js';
 import playerUrl from '../../assets/JUGADOR.png';
 import elfUrl from '../../assets/ENEMIGO1 ELFO.png';
 import zombieUrl from '../../assets/ENEMIGO2 ZOMBIE.png';
+import ogreUrl from '../../assets/ENEMIGO3 OGRO.png';
 import arrowUrl from '../../assets/FLECHA.png';
 import chestUrl from '../../assets/COFRE.png';
 import appleUrl from '../../assets/MANZANA.png';
@@ -16,6 +17,7 @@ export class BootScene extends Phaser.Scene {
     this.load.image('player', playerUrl);
     this.load.image('elf', elfUrl);
     this.load.image('zombie', zombieUrl);
+    this.load.image('ogre', ogreUrl);
     this.load.image('arrow', arrowUrl);
     this.load.image('chest', chestUrl);
     this.load.image('apple', appleUrl);

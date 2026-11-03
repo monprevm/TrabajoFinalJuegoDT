@@ -12,13 +12,15 @@ export class Arrow extends Phaser.Physics.Arcade.Image {
     this.dead = false;
   }
 
-  fire(x, y, direction) {
+  fire(x, y, direction, options = {}) {
+    const speed = options.speed ?? CONFIG.ARROW.speed;
+    this.damage = options.damage ?? CONFIG.ARROW.damage;
     this.dead = false;
     this.setActive(true);
     this.setVisible(true);
     this.setPosition(x, y);
     this.setAngle(direction.angle);
-    this.setVelocity(direction.x * CONFIG.ARROW.speed, direction.y * CONFIG.ARROW.speed);
+    this.setVelocity(direction.x * speed, direction.y * speed);
     this.lifespanUntil = this.scene.time.now + this.lifespanMs;
   }
 

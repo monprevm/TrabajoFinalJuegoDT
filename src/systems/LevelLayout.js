@@ -25,6 +25,14 @@ export class LevelLayout {
     );
     for (const tile of chestTiles) used.add(`${tile.x},${tile.y}`);
 
+    const ogreTiles = this.#pickTilesAtDistance(
+      playerTile,
+      this.levelConfig.ogreCount ?? 0,
+      this.levelConfig.ogreMinDistanceFromPlayer ?? this.levelConfig.minSpawnDistanceFromPlayer,
+      used,
+    );
+    for (const tile of ogreTiles) used.add(`${tile.x},${tile.y}`);
+
     const elfGroups = this.#pickEnemyGroups(
       playerTile,
       this.levelConfig.elfGroups,
@@ -45,6 +53,7 @@ export class LevelLayout {
       doorTile,
       keyTiles,
       chestTiles,
+      ogreTiles,
       elfGroups,
       zombieGroups,
     };
