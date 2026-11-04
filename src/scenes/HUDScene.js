@@ -16,8 +16,13 @@ export class HUDScene extends Phaser.Scene {
     this.ammoText = this.add
       .text(24, 40, '', { fontFamily: 'monospace', fontSize: '16px', color: '#8ecbff' })
       .setScrollFactor(0);
+    this.appleIcon = this.add
+      .image(26, 68, 'apple')
+      .setDisplaySize(20, 15)
+      .setScrollFactor(0)
+      .setAlpha(0.35);
     this.appleText = this.add
-      .text(24, 60, '', { fontFamily: 'monospace', fontSize: '16px', color: '#8bd450' })
+      .text(44, 60, '', { fontFamily: 'monospace', fontSize: '16px', color: '#8bd450' })
       .setScrollFactor(0);
     this.keysText = this.add
       .text(this.scale.width - 24, 22, '', {
@@ -160,6 +165,7 @@ export class HUDScene extends Phaser.Scene {
       heart.setVisible(index < stats.maxHealth);
     });
     this.ammoText.setText(`Flechas: ${stats.ammo}/${stats.maxAmmo}`);
+    this.appleIcon.setAlpha(stats.apples > 0 ? 1 : 0.35);
     this.appleText.setText(`Comida: ${stats.apples} (C para comer)`);
     this.keysText.setText(`Llaves: ${stats.keys}/3`);
     this.scoreText.setText(`Puntos: ${stats.score}`);
