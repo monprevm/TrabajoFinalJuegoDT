@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { CONFIG } from '../config.js';
 
+// FLECHA.png apunta hacia arriba: se suma 90° para alinear el dibujo con la dirección de vuelo.
+const SPRITE_ANGLE_OFFSET = 90;
+
 export class Arrow extends Phaser.Physics.Arcade.Image {
   constructor(scene, x, y) {
     super(scene, x, y, 'arrow');
@@ -19,7 +22,7 @@ export class Arrow extends Phaser.Physics.Arcade.Image {
     this.setActive(true);
     this.setVisible(true);
     this.setPosition(x, y);
-    this.setAngle(direction.angle);
+    this.setAngle(direction.angle + SPRITE_ANGLE_OFFSET);
     this.setVelocity(direction.x * speed, direction.y * speed);
     this.lifespanUntil = this.scene.time.now + this.lifespanMs;
   }

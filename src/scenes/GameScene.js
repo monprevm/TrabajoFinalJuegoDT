@@ -328,6 +328,7 @@ export class GameScene extends Phaser.Scene {
         stored ? reward.label : 'Bolsa de comida llena',
         stored ? '#8bd450' : '#aaaaaa',
       );
+      if (stored) this.#showFloatingIcon(this.player.x + 22, this.player.y - 4, 'apple');
     }
   }
 
@@ -399,6 +400,19 @@ export class GameScene extends Phaser.Scene {
       duration: 900,
       ease: 'Cubic.easeOut',
       onComplete: () => text.destroy(),
+    });
+  }
+
+  #showFloatingIcon(x, y, texture) {
+    const icon = this.add.image(x, y, texture).setDepth(10);
+    icon.setScale(Math.min(24 / icon.width, 24 / icon.height));
+    this.tweens.add({
+      targets: icon,
+      y: y - 28,
+      alpha: 0,
+      duration: 900,
+      ease: 'Cubic.easeOut',
+      onComplete: () => icon.destroy(),
     });
   }
 

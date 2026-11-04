@@ -13,6 +13,7 @@ export const CONFIG = {
     shotCooldownMs: 1000,
     invulnerabilityMs: 1000,
     appleBagMax: 1,
+    walkFrameRate: 8,
   },
   ARROW: {
     speed: 340,

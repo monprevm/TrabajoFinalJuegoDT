@@ -15,7 +15,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('player', playerUrl);
+    this.load.spritesheet('player', playerUrl, { frameWidth: 40, frameHeight: 40 });
     this.load.image('elf', elfUrl);
     this.load.image('zombie', zombieUrl);
     this.load.image('ogre', ogreUrl);

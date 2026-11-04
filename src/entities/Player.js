@@ -2,16 +2,24 @@ import Phaser from 'phaser';
 import { CONFIG } from '../config.js';
 import { Arrow } from './Arrow.js';
 
+// Spritesheet JUGADOR.png (200x40, frames de 40x40):
+// 0, 1, 2 = caminata a la izquierda; 1 = reposo mirando a la izquierda;
+// 3 = abajo; 4 = arriba. La derecha reutiliza los frames 0-2 espejados.
 const DIRECTIONS = {
-  up: { x: 0, y: -1, angle: -90 },
-  down: { x: 0, y: 1, angle: 90 },
-  left: { x: -1, y: 0, angle: 180 },
-  right: { x: 1, y: 0, angle: 0 },
+  up: { x: 0, y: -1, angle: -90, idleFrame: 4 },
+  down: { x: 0, y: 1, angle: 90, idleFrame: 3 },
+  left: { x: -1, y: 0, angle: 180, idleFrame: 1 },
+  right: { x: 1, y: 0, angle: 0, idleFrame: 1 },
 };
+
+// La secuencia 0 -> 1 -> 2 -> 1 se repite, como pidió el diseño del spritesheet.
+const WALK_ANIM_KEY = 'player-walk-side';
+const WALK_FRAME_SEQUENCE = [0, 1, 2, 1];
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'player');
+    Player.ensureAnimations(scene);
     scene.add.existing(scene.physics.add.existing(this));
     this.setCollideWorldBounds(true);
 
@@ -33,6 +41,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.lastDirection = DIRECTIONS.right;
     this.alive = true;
     this.isWallJumping = false;
+    this.#updateDirectionVisual(false);
 
     this.arrows = scene.physics.add.group({
       classType: Arrow,
@@ -40,9 +49,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  static ensureAnimations(scene) {
+    if (scene.anims.exists(WALK_ANIM_KEY)) return;
+    scene.anims.create({
+      key: WALK_ANIM_KEY,
+      frames: scene.anims.generateFrameNumbers('player', { frames: WALK_FRAME_SEQUENCE }),
+      frameRate: CONFIG.PLAYER.walkFrameRate,
+      repeat: -1,
+    });
+  }
+
   handleInput(cursors, keys, time) {
     if (!this.alive || this.isWallJumping) {
-      if (this.isWallJumping) this.setVelocity(0, 0);
+      if (this.isWallJumping) {
+        this.setVelocity(0, 0);
+        this.#updateDirectionVisual(false);
+      }
       return;
     }
 
@@ -64,6 +86,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     const magnitude = Math.hypot(vx, vy);
+    this.#updateDirectionVisual(magnitude > 0);
+
     if (magnitude > 0) {
       this.setVelocity((vx / magnitude) * this.speed, (vy / magnitude) * this.speed);
     } else {
@@ -73,6 +97,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (Phaser.Input.Keyboard.JustDown(keys.eat)) {
       this.eatApple();
     }
+  }
+
+  #updateDirectionVisual(isMoving) {
+    const direction = this.lastDirection;
+    const isSide = direction === DIRECTIONS.left || direction === DIRECTIONS.right;
+    this.setFlipX(direction === DIRECTIONS.right);
+
+    if (isSide && isMoving) {
+      if (!this.anims.isPlaying || this.anims.currentAnim?.key !== WALK_ANIM_KEY) {
+        this.anims.play(WALK_ANIM_KEY, true);
+      }
+      return;
+    }
+
+    if (this.anims.isPlaying) this.anims.stop();
+    const { idleFrame } = direction;
+    if (this.frame.name !== String(idleFrame)) this.setFrame(idleFrame);
   }
 
   tryShoot(time, pointer) {
@@ -176,6 +217,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   die() {
     if (!this.alive) return;
     this.alive = false;
+    this.anims.stop();
     this.setVelocity(0, 0);
     this.setTint(0x888888);
     this.emitStatsChanged();
