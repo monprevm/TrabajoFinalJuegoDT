@@ -2,6 +2,10 @@ export const CONFIG = {
   SCREEN_WIDTH: 960,
   SCREEN_HEIGHT: 640,
   TILE_SIZE: 32,
+  TILE_FRAMES: {
+    WALL: 0,
+    FLOOR: 1,
+  },
   SEED: 20261019,
   TOTAL_LEVELS: 5,
   PLAYER: {

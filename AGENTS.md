@@ -14,7 +14,7 @@ Instrucciones operativas para el trabajo del agente de IA en este repositorio.
 - El archivo `docs/~$ DT2 GDD.docx` es temporal de Word y debe ignorarse; la fuente vigente es `docs/TF DT2 GDD.docx`.
 - Stack declarado: Phaser/Web (JavaScript/TypeScript). Si la estructura real del proyecto difiere cuando se agregue código, registrarla en este archivo sin asumirla.
 - Recursos gráficos: carpeta `assets/` en la raíz del proyecto, según convención informada por el usuario.
-- Recursos gráficos detectados en `assets/` al momento del diagnóstico: `JUGADOR.png`, `ENEMIGO1 ELFO.png`, `ENEMIGO2 ZOMBIE.png`, `ENEMIGO3 OGRO.png`, `FLECHA.png`, `COFRE.png`, `HADA.png`, `MANZANA.png`. Esta lista puede cambiar; verificar su disponibilidad antes de referenciarla.
+- Recursos gráficos detectados en `assets/` al momento del diagnóstico: `JUGADOR.png`, `ENEMIGO1 ELFO.png`, `ENEMIGO2 ZOMBIE.png`, `ENEMIGO3 OGRO.png`, `FLECHA.png`, `COFRE.png`, `HADA.png`, `MANZANA.png`, `TILES.png`. Esta lista puede cambiar; verificar su disponibilidad antes de referenciarla.
 - Repositorio Git: rama base `master`, remoto `origin` (`https://github.com/monprevm/TrabajoFinalJuegoDT.git`).
 - En el diagnóstico inicial no se ha detectado código fuente ni scripts de prueba. Existe la carpeta `assets/` con sprites. Las rutas y comandos reales deben verificarse cuando existan; no inventarlos.
 - Clasificar el requisito solicitado como: definido, parcialmente definido, no definido, en contradicción o no aplica.
@@ -150,7 +150,7 @@ Además:
 - Consultar detalles como spritesheet, fotogramas o animaciones cuando sean necesarios y no estén documentados.
 - Si falta el archivo, solicitarlo antes de avanzar con la parte que depende de él.
 - Continuar con la lógica independiente de los recursos gráficos mientras se resuelve la consulta.
-- Recursos gráficos detectados al momento del diagnóstico en `assets/`: `JUGADOR.png`, `ENEMIGO1 ELFO.png`, `ENEMIGO2 ZOMBIE.png`, `ENEMIGO3 OGRO.png`, `FLECHA.png`, `COFRE.png`, `HADA.png`, `MANZANA.png`; su uso debe confirmarse antes de implementar.
+- Recursos gráficos detectados al momento del diagnóstico en `assets/`: `JUGADOR.png`, `ENEMIGO1 ELFO.png`, `ENEMIGO2 ZOMBIE.png`, `ENEMIGO3 OGRO.png`, `FLECHA.png`, `COFRE.png`, `HADA.png`, `MANZANA.png`, `TILES.png`; su uso debe confirmarse antes de implementar.
 - No tratar `docs/~$ DT2 GDD.docx` ni archivos temporales como recursos válidos del proyecto.
 
 ## 8. Definir y preparar el flujo Git
@@ -268,7 +268,7 @@ Estructura real implementada (JavaScript + Phaser 3 + Vite):
 - `src/scenes/`: `BootScene`, `GameScene`, `HUDScene`, `GameOverScene`, `LevelClearScene`.
 - `src/entities/`: `Player`, `Enemy` (base), `Elf`, `Zombie`, `Ogre`, `Mushroom`, `Arrow`, `KeyItem`, `Chest`, `Door`.
 - `src/systems/`: `MazeGenerator` (backtracker con semilla), `LevelLayout` (colocación de llaves, cofres, puerta, grupos de enemigos, Ogros y pares de hongos), `RewardFactory` (tesoro, manzana, munición, Hada y Marco de corazón), `Random` (mulberry32).
-- `assets/`: se importan desde `BootScene`. Los recursos faltantes (pared, piso, llave, puerta, corazones) son mockups generados por código y deben reemplazarse cuando existan los definitivos.
+- `assets/`: se importan desde `BootScene`. `TILES.png` (64×32) se carga como spritesheet `tiles` con dos frames de 32×32: frame 0 = pared y frame 1 = piso (`CONFIG.TILE_FRAMES`). Los recursos faltantes (llave, puerta, corazones, hongo y flecha de pista) son mockups generados por código y deben reemplazarse cuando existan los definitivos.
 - `.gitignore`: excluye `node_modules/`, `dist/` y archivos temporales/logs.
 
 Comandos verificados en este proyecto: `npm install`, `npm run build` (vite build) y `npm run dev` (servidor en `http://localhost:5173`). No hay linter ni framework de tests configurado.

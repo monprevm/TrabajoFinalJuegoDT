@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CONFIG } from '../config.js';
 
 export class MainMenuScene extends Phaser.Scene {
   constructor() {
@@ -9,7 +10,9 @@ export class MainMenuScene extends Phaser.Scene {
     const { width, height } = this.scale;
     this.input.mouse.disableContextMenu();
 
-    this.add.tileSprite(0, 0, width, height, 'floor').setOrigin(0, 0);
+    this.add
+      .tileSprite(0, 0, width, height, 'tiles', CONFIG.TILE_FRAMES.FLOOR)
+      .setOrigin(0, 0);
     this.add.rectangle(0, 0, width, height, 0x000000, 0.55).setOrigin(0);
 
     this.add

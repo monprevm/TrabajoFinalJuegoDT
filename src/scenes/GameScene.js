@@ -65,13 +65,20 @@ export class GameScene extends Phaser.Scene {
     const worldHeight = this.maze.height() * tile;
     this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
 
-    this.add.tileSprite(0, 0, worldWidth, worldHeight, 'floor').setOrigin(0, 0);
+    this.add
+      .tileSprite(0, 0, worldWidth, worldHeight, 'tiles', CONFIG.TILE_FRAMES.FLOOR)
+      .setOrigin(0, 0);
 
     this.walls = this.physics.add.staticGroup();
     for (let y = 0; y < this.maze.height(); y += 1) {
       for (let x = 0; x < this.maze.width(); x += 1) {
         if (this.maze.grid[y][x] === WALL) {
-          this.walls.create(x * tile + tile / 2, y * tile + tile / 2, 'wall');
+          this.walls.create(
+            x * tile + tile / 2,
+            y * tile + tile / 2,
+            'tiles',
+            CONFIG.TILE_FRAMES.WALL,
+          );
         }
       }
     }
