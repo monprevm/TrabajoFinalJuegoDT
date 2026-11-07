@@ -9,6 +9,8 @@ import chestUrl from '../../assets/COFRE.png';
 import appleUrl from '../../assets/MANZANA.png';
 import hadaUrl from '../../assets/HADA.png';
 import tilesUrl from '../../assets/TILES.png';
+import keyUrl from '../../assets/LLAVE.png';
+import doorUrl from '../../assets/PUERTA.png';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -24,6 +26,8 @@ export class BootScene extends Phaser.Scene {
     this.load.image('chest', chestUrl);
     this.load.image('apple', appleUrl);
     this.load.image('hada', hadaUrl);
+    this.load.image('key', keyUrl);
+    this.load.image('door', doorUrl);
     this.load.spritesheet('tiles', tilesUrl, {
       frameWidth: CONFIG.TILE_SIZE,
       frameHeight: CONFIG.TILE_SIZE,
@@ -39,24 +43,6 @@ export class BootScene extends Phaser.Scene {
 
   #generateMockups() {
     const g = this.make.graphics({ add: false });
-
-    g.fillStyle(0xffd83d);
-    g.fillCircle(10, 12, 6);
-    g.fillStyle(0xc9a227);
-    g.fillRect(12, 10, 10, 4);
-    g.fillRect(18, 10, 3, 7);
-    g.fillRect(15, 10, 3, 6);
-    g.generateTexture('key', 24, 22);
-    g.clear();
-
-    g.fillStyle(0x3d8b4f);
-    g.fillRect(0, 0, 22, 30);
-    g.lineStyle(2, 0x1f4d2a);
-    g.strokeRect(1, 1, 20, 28);
-    g.fillStyle(0xffd83d);
-    g.fillCircle(16, 16, 2);
-    g.generateTexture('door', 22, 30);
-    g.clear();
 
     g.fillStyle(0xff3b3b);
     g.fillCircle(8, 7, 6);
