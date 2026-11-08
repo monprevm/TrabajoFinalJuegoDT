@@ -8,6 +8,20 @@ export const CONFIG = {
   },
   SEED: 20261019,
   TOTAL_LEVELS: 5,
+  CAMERA: {
+    // Zoom menor a 1 aleja la cámara y amplía apenas el campo de visión.
+    zoom: 0.9,
+    followLerp: 0.12,
+  },
+  DARKNESS: {
+    // Halo circular centrado en el cuerpo del jugador. 128 px = 4 tiles.
+    radius: 128,
+    // Porción central del halo que se ve completamente iluminada.
+    coreRatio: 0.65,
+    // Opacidad de la oscuridad fuera del halo (negro total).
+    opacity: 1,
+    color: 0x000000,
+  },
   PLAYER: {
     speed: 170,
     maxHealthCap: 5,

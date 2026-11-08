@@ -264,10 +264,10 @@ Estructura real implementada (JavaScript + Phaser 3 + Vite):
 
 - `index.html`, `vite.config.js`, `package.json` con scripts `dev`, `build` y `preview`.
 - `src/main.js`: configuración del juego Phaser y registro de escenas.
-- `src/config.js`: parámetros del nivel (semilla, tamaño del laberinto, jugador, enemigos, cantidades). Las cantidades que el GDD no define se centralizan acá como supuestos configurables. `TOTAL_LEVELS = 5`; los niveles 3 a 5 están configurados y el Ogro aparece desde el nivel 3. La vida máxima inicial es 3 y el tope es 5; las recompensas Hada y Marco de corazón se habilitan desde el nivel 4. El nivel 5 es el cierre: 25×25, 2 Ogros y 4 pares de hongos saltarines.
+- `src/config.js`: parámetros del nivel (semilla, tamaño del laberinto, jugador, enemigos, cantidades). Las cantidades que el GDD no define se centralizan acá como supuestos configurables. `TOTAL_LEVELS = 5`; los niveles 3 a 5 están configurados y el Ogro aparece desde el nivel 3. La vida máxima inicial es 3 y el tope es 5; las recompensas Hada y Marco de corazón se habilitan desde el nivel 4. El nivel 5 es el cierre: 25×25, 2 Ogros y 4 pares de hongos saltarines. `CAMERA.zoom` (0.9) amplía apenas el campo de visión y `DARKNESS` define la oscuridad del nivel y el halo de luz del jugador (radio 128 px, opacidad 1.0, negro total).
 - `src/scenes/`: `BootScene`, `GameScene`, `HUDScene`, `GameOverScene`, `LevelClearScene`.
 - `src/entities/`: `Player`, `Enemy` (base), `Elf`, `Zombie`, `Ogre`, `Mushroom`, `Arrow`, `KeyItem`, `Chest`, `Door`.
-- `src/systems/`: `MazeGenerator` (backtracker con semilla), `LevelLayout` (colocación de llaves, cofres, puerta, grupos de enemigos, Ogros y pares de hongos), `RewardFactory` (tesoro, manzana, munición, Hada y Marco de corazón), `Random` (mulberry32).
+- `src/systems/`: `MazeGenerator` (backtracker con semilla), `LevelLayout` (colocación de llaves, cofres, puerta, grupos de enemigos, Ogros y pares de hongos), `RewardFactory` (tesoro, manzana, munición, Hada y Marco de corazón), `Random` (mulberry32), `Darkness` (capa de oscuridad del nivel con halo circular de luz centrado en el jugador).
 - `assets/`: se importan desde `BootScene`. `TILES.png` (64×32) se carga como spritesheet `tiles` con dos frames de 32×32: frame 0 = pared y frame 1 = piso (`CONFIG.TILE_FRAMES`). Los recursos faltantes (llave, puerta, corazones, hongo y flecha de pista) son mockups generados por código y deben reemplazarse cuando existan los definitivos.
 - `.gitignore`: excluye `node_modules/`, `dist/` y archivos temporales/logs.
 

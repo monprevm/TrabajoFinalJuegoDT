@@ -4,6 +4,7 @@ import { MazeGenerator, WALL } from '../systems/MazeGenerator.js';
 import { SeededRandom } from '../systems/Random.js';
 import { LevelLayout } from '../systems/LevelLayout.js';
 import { RewardFactory, REWARD_TYPES } from '../systems/RewardFactory.js';
+import { Darkness } from '../systems/Darkness.js';
 import { Player } from '../entities/Player.js';
 import { Arrow } from '../entities/Arrow.js';
 import { Elf } from '../entities/Elf.js';
@@ -46,6 +47,7 @@ export class GameScene extends Phaser.Scene {
     this.#createInput();
     this.#setupCollisions();
     this.#setupCamera();
+    this.#createDarkness();
 
     this.player.on('stats-changed', (stats) => {
       this.registry.set('stats', stats);
@@ -292,7 +294,23 @@ export class GameScene extends Phaser.Scene {
     const worldWidth = this.maze.width() * CONFIG.TILE_SIZE;
     const worldHeight = this.maze.height() * CONFIG.TILE_SIZE;
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
-    this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
+    this.cameras.main.setZoom(CONFIG.CAMERA.zoom);
+    this.cameras.main.startFollow(
+      this.player,
+      true,
+      CONFIG.CAMERA.followLerp,
+      CONFIG.CAMERA.followLerp,
+    );
+  }
+
+  #createDarkness() {
+    const worldWidth = this.maze.width() * CONFIG.TILE_SIZE;
+    const worldHeight = this.maze.height() * CONFIG.TILE_SIZE;
+    this.darkness = new Darkness(this, {
+      ...CONFIG.DARKNESS,
+      width: worldWidth,
+      height: worldHeight,
+    });
   }
 
   #applyReward(reward) {
@@ -459,6 +477,7 @@ export class GameScene extends Phaser.Scene {
     if (!this.player || !this.player.alive) return;
     this.player.handleInput(this.cursors, this.keys, time);
     this.player.tryShoot(time, this.input.activePointer);
+    this.darkness.update(this.player);
     this.#updateMushroomLock();
     this.enemies.getChildren().forEach((enemy) => {
       if (enemy.active) enemy.update(time, this.player, this.maze);
