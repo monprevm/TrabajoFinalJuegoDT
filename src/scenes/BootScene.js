@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { CONFIG } from '../config.js';
+import { EN, ES } from '../enums/languages.js';
+import { getLanguageConfig, getTranslations } from '../services/translations.js';
 import playerUrl from '../../assets/JUGADOR.png';
 import elfUrl from '../../assets/ENEMIGO1 ELFO.png';
 import zombieUrl from '../../assets/ENEMIGO2 ZOMBIE.png';
@@ -34,10 +36,18 @@ export class BootScene extends Phaser.Scene {
     });
   }
 
-  create() {
+  async create() {
     this.#generateMockups();
     if (!this.registry.has('level')) this.registry.set('level', 1);
     if (!this.registry.has('score')) this.registry.set('score', 0);
+    const detectedLanguage = getLanguageConfig();
+    const language = detectedLanguage === EN ? EN : ES;
+    this.registry.set('language', language);
+    try {
+      await getTranslations(language);
+    } catch (error) {
+      console.error('[Traducila] No se pudieron cargar las traducciones.', error);
+    }
     this.scene.start('MainMenuScene');
   }
 

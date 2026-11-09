@@ -14,6 +14,8 @@ import { Mushroom } from '../entities/Mushroom.js';
 import { KeyItem } from '../entities/KeyItem.js';
 import { Chest } from '../entities/Chest.js';
 import { Door, DOOR_STATES } from '../entities/Door.js';
+import { KEYS } from '../enums/keys.js';
+import { getPhrase } from '../services/translations.js';
 
 export class GameScene extends Phaser.Scene {
   constructor() {
@@ -167,7 +169,7 @@ export class GameScene extends Phaser.Scene {
     for (const tile of layout.ogreTiles) {
       bossIndex += 1;
       const bossId = `ogre-${bossIndex}`;
-      const bossLabel = `Ogro ${bossIndex}`;
+      const bossLabel = `${getPhrase(KEYS.OGRO)} ${bossIndex}`;
       const pos = this.#tileToWorld(tile);
       const ogre = new Ogre(this, pos.x, pos.y);
       this.#fitSprite(ogre, CONFIG.TILE_SIZE * 0.95);
@@ -199,7 +201,7 @@ export class GameScene extends Phaser.Scene {
     if (distance > area.radius) return;
     const hit = this.player.takeDamage(CONFIG.OGRE.stompDamage, this.time.now);
     if (hit) {
-      this.#showFloatingText(this.player.x, this.player.y - 20, '¡Pisotada!', '#ff6b6b');
+      this.#showFloatingText(this.player.x, this.player.y - 20, getPhrase(KEYS.PISOTADA), '#ff6b6b');
     }
   }
 
@@ -222,7 +224,7 @@ export class GameScene extends Phaser.Scene {
       if (mushroom.active) mushroom.clearTint();
       if (target.active) target.clearTint();
     });
-    this.#showFloatingText(this.player.x, this.player.y - 20, '¡Salto!', '#ffd83d');
+    this.#showFloatingText(this.player.x, this.player.y - 20, getPhrase(KEYS.SALTO), '#ffd83d');
   }
 
   #updateMushroomLock() {
@@ -270,7 +272,12 @@ export class GameScene extends Phaser.Scene {
       key.destroy();
       const count = this.player.addKey();
       this.door.updateState(this.player.keys, this.requiredKeys);
-      this.#showFloatingText(this.player.x, this.player.y - 20, `Llave ${count}/${this.requiredKeys}`, '#ffd83d');
+      this.#showFloatingText(
+        this.player.x,
+        this.player.y - 20,
+        `${getPhrase(KEYS.LLAVE)} ${count}/${this.requiredKeys}`,
+        '#ffd83d',
+      );
     });
 
     this.physics.add.overlap(this.player, this.chests, (_player, chest) => {
@@ -321,7 +328,10 @@ export class GameScene extends Phaser.Scene {
     }
     if (reward.type === REWARD_TYPES.AMMO) {
       const added = this.player.addAmmo(reward.amount);
-      const label = added > 0 ? `+${added} flechas` : 'Munición llena';
+      const label =
+        added > 0
+          ? `+${added} ${getPhrase(KEYS.FLECHAS).replace(':', '')}`
+          : getPhrase(KEYS.MUNICION_LLENA);
       this.#showFloatingText(this.player.x, this.player.y - 20, label, '#8ecbff');
       return;
     }
@@ -330,7 +340,7 @@ export class GameScene extends Phaser.Scene {
       this.#showFloatingText(
         this.player.x,
         this.player.y - 20,
-        label ?? 'No quedan objetivos',
+        label ?? getPhrase(KEYS.NO_QUEDAN_OBJETIVOS),
         label ? '#c9b8ff' : '#aaaaaa',
       );
       return;
@@ -340,7 +350,7 @@ export class GameScene extends Phaser.Scene {
       this.#showFloatingText(
         this.player.x,
         this.player.y - 20,
-        gained ? 'Vida máxima +1' : 'Vida máxima al límite',
+        gained ? getPhrase(KEYS.VIDA_MAXIMA_1) : getPhrase(KEYS.VIDA_MAXIMA_AL_LIMITE),
         gained ? '#ff6b9a' : '#aaaaaa',
       );
       return;
@@ -350,7 +360,7 @@ export class GameScene extends Phaser.Scene {
       this.#showFloatingText(
         this.player.x,
         this.player.y - 20,
-        stored ? reward.label : 'Bolsa de comida llena',
+        stored ? reward.label : getPhrase(KEYS.BOLSA_DE_COMIDA_LLENA),
         stored ? '#8bd450' : '#aaaaaa',
       );
       if (stored) this.#showFloatingIcon(this.player.x + 22, this.player.y - 4, 'apple');
@@ -362,7 +372,9 @@ export class GameScene extends Phaser.Scene {
     if (!target) return null;
     const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, target.x, target.y);
     const label =
-      this.player.keys >= this.requiredKeys ? 'Hada: la puerta' : 'Hada: llave restante';
+      this.player.keys >= this.requiredKeys
+        ? getPhrase(KEYS.HADA_LA_PUERTA)
+        : getPhrase(KEYS.HADA_LLAVE_RESTANTE);
     this.game.events.emit('hud-hint', { angle, label, durationMs: 5000 });
     return label;
   }
@@ -402,7 +414,10 @@ export class GameScene extends Phaser.Scene {
     this.#showFloatingText(
       this.door.x,
       this.door.y - 24,
-      `Necesitás ${this.requiredKeys} llaves (${this.player.keys}/${this.requiredKeys})`,
+      getPhrase(KEYS.NECESITAS_N_LLAVES_X_N)
+        .replace('{n}', this.requiredKeys)
+        .replace('{x}', this.player.keys)
+        .replace('{n}', this.requiredKeys),
       '#ff9a5c',
     );
   }

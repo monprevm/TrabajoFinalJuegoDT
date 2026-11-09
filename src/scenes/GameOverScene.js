@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { KEYS } from '../enums/keys.js';
+import { getPhrase } from '../services/translations.js';
 
 export class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -23,7 +25,7 @@ export class GameOverScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(width / 2, height / 2 - 30, `Puntaje: ${score}`, {
+      .text(width / 2, height / 2 - 30, `${getPhrase(KEYS.PUNTAJE)} ${score}`, {
         fontFamily: 'monospace',
         fontSize: '24px',
         color: '#ffd83d',
@@ -31,7 +33,7 @@ export class GameOverScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(width / 2, height / 2 + 10, `Nivel alcanzado: ${level}`, {
+      .text(width / 2, height / 2 + 10, `${getPhrase(KEYS.NIVEL_ALCANZADO)}: ${level}`, {
         fontFamily: 'monospace',
         fontSize: '20px',
         color: '#ffffff',
@@ -42,7 +44,9 @@ export class GameOverScene extends Phaser.Scene {
       .text(
         width / 2,
         height / 2 + 75,
-        'ENTER o click: reintentar desde el nivel 1\nESC: volver al menú principal',
+        getPhrase(
+          KEYS.ENTER_O_CLICK_REINTENTAR_DESDE_EL_NIVEL_1_ESC_VOLVER_AL_MENU_PRINCIPAL,
+        ).replace(' ESC: ', '\nESC: '),
         {
           fontFamily: 'monospace',
           fontSize: '18px',

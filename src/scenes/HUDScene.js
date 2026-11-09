@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { KEYS } from '../enums/keys.js';
+import { getPhrase } from '../services/translations.js';
 
 export class HUDScene extends Phaser.Scene {
   constructor() {
@@ -42,7 +44,7 @@ export class HUDScene extends Phaser.Scene {
       .setScrollFactor(0);
 
     this.helpText = this.add
-      .text(this.scale.width / 2, this.scale.height - 14, 'WASD: mover | Click derecho: disparar | C: comer', {
+      .text(this.scale.width / 2, this.scale.height - 14, `${getPhrase(KEYS.WASD_MOVER)} | ${getPhrase(KEYS.CLICK_DERECHO_DISPARAR)} | ${getPhrase(KEYS.C_COMER)}`, {
         fontFamily: 'monospace',
         fontSize: '13px',
         color: '#aaaaaa',
@@ -164,10 +166,10 @@ export class HUDScene extends Phaser.Scene {
       heart.setTexture(index < stats.health ? 'heart-full' : 'heart-empty');
       heart.setVisible(index < stats.maxHealth);
     });
-    this.ammoText.setText(`Flechas: ${stats.ammo}/${stats.maxAmmo}`);
+    this.ammoText.setText(`${getPhrase(KEYS.FLECHAS)} ${stats.ammo}/${stats.maxAmmo}`);
     this.appleIcon.setAlpha(stats.apples > 0 ? 1 : 0.35);
-    this.appleText.setText(`Comida: ${stats.apples} (C para comer)`);
-    this.keysText.setText(`Llaves: ${stats.keys}/3`);
-    this.scoreText.setText(`Puntos: ${stats.score}`);
+    this.appleText.setText(`${getPhrase(KEYS.COMIDA_C_PARA_COMER)} ${stats.apples}`);
+    this.keysText.setText(`${getPhrase(KEYS.LLAVES)}: ${stats.keys}/3`);
+    this.scoreText.setText(`${getPhrase(KEYS.PUNTOS_2)}: ${stats.score}`);
   }
 }

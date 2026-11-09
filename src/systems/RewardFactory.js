@@ -1,4 +1,6 @@
 import { CONFIG } from '../config.js';
+import { KEYS } from '../enums/keys.js';
+import { getPhrase } from '../services/translations.js';
 
 export const REWARD_TYPES = {
   TREASURE: 'treasure',
@@ -33,21 +35,25 @@ export class RewardFactory {
   describe(reward) {
     if (reward.type === REWARD_TYPES.TREASURE) {
       const points = this.random.int(CONFIG.TREASURE.minPoints, CONFIG.TREASURE.maxPoints);
-      return { type: reward.type, points, label: `+${points} puntos` };
+      return { type: reward.type, points, label: `+${points} ${getPhrase(KEYS.PUNTOS)}` };
     }
     if (reward.type === REWARD_TYPES.AMMO) {
       const amount = this.random.int(CONFIG.AMMO_PICKUP.min, CONFIG.AMMO_PICKUP.max);
-      return { type: reward.type, amount, label: `+${amount} flechas` };
+      return {
+        type: reward.type,
+        amount,
+        label: `+${amount} ${getPhrase(KEYS.FLECHAS).replace(':', '')}`,
+      };
     }
     if (reward.type === REWARD_TYPES.APPLE) {
-      return { type: reward.type, label: 'Manzana (+1 comida)' };
+      return { type: reward.type, label: getPhrase(KEYS.MANZANA_1_COMIDA) };
     }
     if (reward.type === REWARD_TYPES.HADA) {
-      return { type: reward.type, label: 'Hada: revela el camino' };
+      return { type: reward.type, label: getPhrase(KEYS.HADA_REVELA_EL_CAMINO) };
     }
     if (reward.type === REWARD_TYPES.HEART_FRAME) {
-      return { type: reward.type, label: 'Marco de corazón (+1 vida máxima)' };
+      return { type: reward.type, label: getPhrase(KEYS.MARCO_DE_CORAZON_1_VIDA_MAXIMA) };
     }
-    return { type: reward.type, label: 'Recompensa' };
+    return { type: reward.type, label: getPhrase(KEYS.RECOMPENSA) };
   }
 }

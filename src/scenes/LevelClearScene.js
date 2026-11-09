@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { CONFIG } from '../config.js';
+import { KEYS } from '../enums/keys.js';
+import { getPhrase } from '../services/translations.js';
 
 export class LevelClearScene extends Phaser.Scene {
   constructor() {
@@ -11,11 +13,13 @@ export class LevelClearScene extends Phaser.Scene {
     const level = data?.level ?? 1;
     const isFinal = data?.isFinal ?? false;
 
-    const title = isFinal ? '¡JUEGO COMPLETADO!' : `¡NIVEL ${level} SUPERADO!`;
+    const title = isFinal
+      ? getPhrase(KEYS.JUEGO_COMPLETADO)
+      : getPhrase(KEYS.NIVEL_N_SUPERADO).replace('{n}', level);
     const titleColor = isFinal ? '#ffd83d' : '#66ff99';
     const prompt = isFinal
-      ? 'Presioná ENTER o click para volver al menú principal'
-      : `Presioná ENTER o click para jugar el nivel ${level + 1}`;
+      ? getPhrase(KEYS.PRESIONA_ENTER_O_CLICK_PARA_VOLVER_AL_MENU_PRINCIPAL)
+      : getPhrase(KEYS.PRESIONA_ENTER_O_CLICK_PARA_JUGAR_EL_NIVEL_N).replace('{n}', level + 1);
     const titleY = this.scale.height / 2 + (isFinal ? -75 : -50);
     const scoreY = this.scale.height / 2 + (isFinal ? -5 : 10);
     const promptY = this.scale.height / 2 + (isFinal ? 95 : 55);
@@ -31,18 +35,25 @@ export class LevelClearScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.add
-      .text(this.scale.width / 2, scoreY, isFinal ? `Puntaje final: ${score}` : `Puntos obtenidos: ${score}`, {
-        fontFamily: 'monospace',
-        fontSize: '22px',
-        color: '#ffd83d',
-      })
+      .text(
+        this.scale.width / 2,
+        scoreY,
+        isFinal
+          ? `${getPhrase(KEYS.PUNTAJE_FINAL)} ${score}`
+          : `${getPhrase(KEYS.PUNTOS_OBTENIDOS)} ${score}`,
+        {
+          fontFamily: 'monospace',
+          fontSize: '22px',
+          color: '#ffd83d',
+        },
+      )
       .setOrigin(0.5);
     if (isFinal) {
       this.add
         .text(
           this.scale.width / 2,
           this.scale.height / 2 + 40,
-          `Niveles completados: ${CONFIG.TOTAL_LEVELS}/${CONFIG.TOTAL_LEVELS}`,
+          `${getPhrase(KEYS.NIVELES_COMPLETADOS)} ${CONFIG.TOTAL_LEVELS}/${CONFIG.TOTAL_LEVELS}`,
           {
             fontFamily: 'monospace',
             fontSize: '18px',
